@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -32,18 +32,37 @@ void CheckCompileErrors(unsigned int shader, std::string type)
 static char* ReadShaderSource(const char *shaderPath)
 {
 	//open file and make it read only
+	char* content;
 	FILE *shaderCode = fopen(shaderPath, "r");
-	//move file pointer to the end of the file and determine the length of the file
-	fseek(shaderCode, 0, SEEK_END);
-	long fileLength = ftell(shaderCode);
-	fseek(shaderCode, 0, SEEK_SET);
-	//Create char pointer that will point to the text content of the shader
-	char *content = (char *)calloc(fileLength + 1, sizeof(char));
-	//Read the file
-	fread(content, 1, fileLength, shaderCode);
-	//Denote end of the string with null character
-	content[fileLength + 1] = '\0';
-	fclose(shaderCode);
+	if (shaderCode != NULL)
+	{
+		//move file pointer to the end of the file and determine the length of the file
+		fseek(shaderCode, 0, SEEK_END);
+		long fileLength = ftell(shaderCode);
+		fseek(shaderCode, 0, SEEK_SET);
+		//Create char pointer that will point to the text content of the shader
+		content = (char *)calloc(fileLength + 1, sizeof(char));
+		if (content != NULL)
+		{
+			//Read the file
+			fread(content, 1, fileLength, shaderCode);
+			//Denote end of the string with null character
+			content[fileLength + 1] = '\0';
+		}
+		else
+		{
+			printf("Error ocurred while reading shader file!");
+			cin.get();
+			exit(0);
+		}
+		fclose(shaderCode);
+	}
+	else
+	{
+		std::cout << "Shader \"" << shaderPath << "\" does not exist!" << std::endl;
+		cin.get();
+		exit(0);
+	}
 	return content;
 }
 

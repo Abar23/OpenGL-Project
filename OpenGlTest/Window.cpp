@@ -40,7 +40,7 @@ Window::Window(int height, int width, const char * title, GLFWmonitor * montior,
 	}
 
 	glEnable(GL_DEPTH_TEST);
-
+	
 	printf("openGL Version: %s\n", glGetString(GL_VERSION));
 	printf("GLSL Language Version : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	printf("openGL Vendor: %s\n", glGetString(GL_VENDOR));
@@ -89,15 +89,18 @@ void Window::ProcessUserInput(glm::vec3 *camerPosition, glm::vec3 *cameraFront, 
 	{
 		*camerPosition += cameraSpeed * *cameraFront;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		*camerPosition -= cameraSpeed * *cameraFront;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		*camerPosition -= cameraSpeed * glm::normalize(glm::cross(*cameraFront, *cameraUp));
 	}
-	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		*camerPosition += cameraSpeed * glm::normalize(glm::cross(*cameraFront, *cameraUp));
 	}

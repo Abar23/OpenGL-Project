@@ -16,14 +16,13 @@
 #include "Texture.h"
 #include "Quaternion.h"
 
-
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 int main()
 {
 	int height = 600;
 	int width = 600;
-
+	
 	Window window(height, width, "Test", NULL, NULL);
 
 	Shader shader("./Shaders/vertexShader.vs", "./Shaders/fragmentShader.fs");
@@ -61,7 +60,7 @@ int main()
 	glEnableVertexAttribArray(positionID);
 	glEnableVertexAttribArray(vertColorID);
 	glEnableVertexAttribArray(texCoordsID);
-
+	
 	//-----------------------Setup index buffer---------------------//
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
@@ -175,9 +174,8 @@ int main()
 		beachTexture.BindTexture(0);
 		brickWallTexture.BindTexture(1);
 
-
 		window.RefreshRate();
-		window.ProcessUserInput(&cameraPos,& cameraFront, &cameraUp);
+		window.ProcessUserInput(&cameraPos, &cameraFront, &cameraUp);
 
 		//Transformations must occur after the textures have been activated
 		viewMatrix = glm::lookAt(cameraPos, cameraFront + cameraPos, cameraUp);
