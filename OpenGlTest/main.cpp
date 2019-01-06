@@ -3,7 +3,6 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-#include <iostream>
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
@@ -15,6 +14,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Quaternion.h"
+#include "Model.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -25,7 +25,7 @@ int main()
 	
 	Window window(height, width, "Test", NULL, NULL);
 
-	Shader shader("./Shaders/vertexShader.vs", "./Shaders/fragmentShader.fs");
+	Shader shader("./Resources/Shaders/vertexShader.vs", "./Resources/Shaders/fragmentShader.fs");
 
 	//----------------------Setup data for rending a traingle--------//
 
@@ -43,11 +43,11 @@ int main()
 	unsigned int indices[] = { 0, 1, 2, 3, 4, 5 };
 
 	//-----------------------Setup vertex buffers--------------------//
-	GLuint vao, vertexBuffer;
-	glGenVertexArrays(1, &vao);
+	GLuint vertexArrayObject, vertexBuffer;
+	glGenVertexArrays(1, &vertexArrayObject);
 	glGenBuffers(1, &vertexBuffer);
 
-	glBindVertexArray(vao);
+	glBindVertexArray(vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, 9 * 6 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 
@@ -132,7 +132,7 @@ int main()
 	glEnableVertexAttribArray(cubePositionLocation);
 	glEnableVertexAttribArray(cubeTextureCoordinates);
 	glBindVertexArray(0);
-	glBindBuffer(GL_VERTEX_ARRAY, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//Define ten locations for ten cubes to be transfered into the world coordinate view
 	glm::vec3 cubePositions[] = {
@@ -149,11 +149,18 @@ int main()
 	};
 
 	//-----------------------Create and load textures------------------//
-	Texture beachTexture("./Textures/Beach.jpg");
-	Texture brickWallTexture("./Textures/Brick Wall.jpg");
+	Texture beachTexture("./Resources/Textures/Beach.jpg");
+	Texture brickWallTexture("./Resources/Textures/Brick Wall.jpg");
 
 	shader.SetUniformToTextureUnit("beachTexture", 0);
 	shader.SetUniformToTextureUnit("brickTexture", 1);
+
+	//-----------------------Setup Model Objects------------------//
+	Shader modelShader("./Resources/Shaders/modelLoader.vs", "./Resources/Shaders/modelLoader.fs");
+	std::string modelPath = "./Resources/Models/Nanosuit/nanosuit.obj";
+	Model nanoSuit(&modelPath, modelShader.GetProgramID());
+	modelPath = "./Resources/Models/Teapot1/teapot.obj";
+	Model teapot(&modelPath, modelShader.GetProgramID());
 
 	//Set intial camera position within the world
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Set camera 3 units backwards. It is backwards since openGL's coordinate system sets the -z axis as the direction the camer looks
@@ -164,7 +171,7 @@ int main()
 	glm::mat4 viewMatrix = glm::mat4(1.0f);
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
-
+	
 	while(window.IsWindowClosed())
 	{
 		window.ClearBuffer();
@@ -179,7 +186,6 @@ int main()
 
 		//Transformations must occur after the textures have been activated
 		viewMatrix = glm::lookAt(cameraPos, cameraFront + cameraPos, cameraUp);
-
 		projectionMatrix = glm::perspective(glm::radians(45.0f), window.GetAspectRatio(), 0.1f, 100.0f);
 		
 		unsigned int modelMatrixLocation = glGetUniformLocation(shader.GetProgramID(), "modelMatrix");
@@ -199,17 +205,39 @@ int main()
 
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // This is to draw the ebo related to the vbo object
+		glBindVertexArray(0);
 		shader.TurnOffProgram();
 		
+		modelShader.UseProgram();
+
+		modelMatrixLocation = glGetUniformLocation(modelShader.GetProgramID(), "model");
+		viewMatrixLocation = glGetUniformLocation(modelShader.GetProgramID(), "view");
+		projectionMatrixLocation = glGetUniformLocation(modelShader.GetProgramID(), "projection");
+
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -10.0f, 0.0f));
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		nanoSuit.Draw(&modelShader);
+
+		modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::scale(glm::translate(modelMatrix, glm::vec3(-15.0f, -5.0f, 0.0f)), glm::vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+		teapot.Draw(&modelShader);
+
+		modelShader.TurnOffProgram();
+
 		window.SwapBuffers();
 		window.PollEvents();
 	}
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteBuffers(1, &cubeBuffer);
 	glDeleteBuffers(1, &ebo);
-	glDeleteVertexArrays(1, &vao);
+	glDeleteVertexArrays(1, &vertexArrayObject);
 	glDeleteVertexArrays(1, &cubeVertexArray);
 }

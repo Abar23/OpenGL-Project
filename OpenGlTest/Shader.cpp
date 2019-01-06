@@ -89,15 +89,17 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
 	glLinkProgram(this->programID);
 	CheckCompileErrors(this->vertexShaderID, "PROGRAM");
 
+	// Remove shader source from GPU
 	glDetachShader(this->programID, this->vertexShaderID);
 	glDetachShader(this->programID, this->fragmentShaderID);
+	// Delete compiled shader binary
 	glDeleteShader(this->vertexShaderID);
 	glDeleteShader(this->fragmentShaderID);
 }
 
 Shader::~Shader()
 {
-	//Detach shaders from the program and delete them
+	//Delete program object
 	glDeleteProgram(this->programID);
 }
 
