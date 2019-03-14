@@ -30,6 +30,9 @@ Texture::Texture(const char *filePathOfImage)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// Unbind texture
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	else
 	{
@@ -50,6 +53,11 @@ void Texture::BindTexture(uint8_t textureUnit)
 
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
+}
+
+GLuint Texture::GetTextureId()
+{
+	return this->textureID;
 }
 
 Texture::~Texture()

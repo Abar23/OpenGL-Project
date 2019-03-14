@@ -1,6 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <stdbool.h>
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
 #include "glm\glm.hpp"
@@ -34,6 +35,8 @@ private:
 	float timeBetweenFrames;
 
 	float timeAtLastFrame;
+
+	bool polygonWireFrameMode = false;
 };
 
 #endif //WINDOW_H

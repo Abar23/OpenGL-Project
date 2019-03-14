@@ -5,6 +5,7 @@
 #include "GL\glew.h"
 #include "glm\glm.hpp"
 #include "Shader.h"
+#include "Texture.h"
 
 struct MeshVertex
 {
@@ -15,9 +16,9 @@ struct MeshVertex
 
 struct MeshTexture
 {
-	GLuint id;
 	std::string type;
 	std::string path;
+	Texture *texture;
 };
 
 class Mesh

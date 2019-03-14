@@ -163,7 +163,7 @@ int main()
 	Model teapot(&modelPath, modelShader.GetProgramID());
 
 	//Set intial camera position within the world
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f); // Set camera 3 units backwards. It is backwards since openGL's coordinate system sets the -z axis as the direction the camer looks
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 25.0f); // Set camera 3 units backwards. It is backwards since openGL's coordinate system sets the -z axis as the direction the camer looks
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f); // Point camera towards the -z diraction, which is towards the world
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f); // Provide vector along the positive y direction to give orientation to the camera
 
@@ -199,13 +199,13 @@ int main()
 		for (unsigned int i = 0; i < 10; i++)
 		{
 			modelMatrix = glm::mat4(1.0);
-			modelMatrix = glm::translate(modelMatrix, cubePositions[i]);
+			modelMatrix = glm::scale(glm::translate(modelMatrix, cubePositions[i]), glm::vec3(1.5f, 1.5f, 1.5f));
 			float angle = 20.0f * i;
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(angle * (float)glfwGetTime()), glm::vec3(1.0f, 0.3f, 0.5f));
 
 			glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 
-			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // This is to draw the ebo related to the vbo object
 		glBindVertexArray(0);
@@ -221,7 +221,7 @@ int main()
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
 		modelMatrix = glm::mat4(1.0f);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, -10.0f, 0.0f));
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(15.0f, -10.0f, 0.0f));
 		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		nanoSuit.Draw(&modelShader);
 

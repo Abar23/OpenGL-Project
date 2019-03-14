@@ -9,8 +9,6 @@ using namespace std;
 class Texture
 {
 public:
-	GLuint textureID;
-
 	Texture(const char *filePathOfImage);
 
 	~Texture();
@@ -18,6 +16,11 @@ public:
 	void UnbindTexture();
 
 	void BindTexture(uint8_t textureUnit);
+
+	GLuint GetTextureId();
+
+private:
+	GLuint textureID;
 };
 
 #endif //TEXTURE_H

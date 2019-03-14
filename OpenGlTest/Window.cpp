@@ -40,6 +40,7 @@ Window::Window(int height, int width, const char * title, GLFWmonitor * montior,
 	}
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);
 	
 	printf("openGL Version: %s\n", glGetString(GL_VERSION));
 	printf("GLSL Language Version : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -103,6 +104,12 @@ void Window::ProcessUserInput(glm::vec3 *camerPosition, glm::vec3 *cameraFront, 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		*camerPosition += cameraSpeed * glm::normalize(glm::cross(*cameraFront, *cameraUp));
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	{
+		(this->polygonWireFrameMode == true) ? glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) : glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		this->polygonWireFrameMode = !this->polygonWireFrameMode;
 	}
 }
 

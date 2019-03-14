@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-unsigned int TextureFromFile(const char *path, const string &directory);
+unsigned int TextureFromFile(const char *path, const string &directory, MeshTexture *meshTexture);
 
 Model::Model(std::string const *path, GLuint shaderProgramID)
 {
@@ -17,6 +17,10 @@ Model::Model(std::string const *path, GLuint shaderProgramID)
 
 Model::~Model()
 {
+	for (unsigned int i = 0; i < this->texturesLoaded.size(); i++)
+	{
+		delete this->texturesLoaded[i].texture;
+	}
 }
 
 void Model::Draw(Shader *shader)
@@ -181,7 +185,7 @@ std::vector<MeshTexture> Model::loadMaterialTextures(aiMaterial *material, aiTex
 		{
 			// If texture hasn't been loaded already, load it
 			MeshTexture texture;
-			texture.id = TextureFromFile(str.C_Str(), this->modelDirectory);
+			TextureFromFile(str.C_Str(), this->modelDirectory, &texture);
 			texture.type = typeName;
 			texture.path = str.C_Str();
 			textures.push_back(texture); // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
@@ -191,10 +195,10 @@ std::vector<MeshTexture> Model::loadMaterialTextures(aiMaterial *material, aiTex
 	return textures;
 }
 
-static unsigned int TextureFromFile(const char *path, const string &directory)
+static unsigned int TextureFromFile(const char *path, const string &directory, MeshTexture *meshTexture)
 {
 	std::string filename = std::string(path);
 	filename = directory + '/' + filename;
-	Texture *texture = new Texture(filename.c_str());
-	return texture->textureID;
+	meshTexture->texture = new Texture(filename.c_str());
+	return meshTexture->texture->GetTextureId();
 }
